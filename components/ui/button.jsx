@@ -19,6 +19,13 @@ const buttonVariants = cva(
           "bg-zinc-100 text-zinc-900 shadow-sm hover:bg-zinc-100/80 dark:bg-zinc-800 dark:text-zinc-50 dark:hover:bg-zinc-800/80",
         ghost: "hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-50",
         link: "text-zinc-900 underline-offset-4 hover:underline dark:text-zinc-50",
+        success:
+          "bg-success text-success-foreground shadow-sm hover:bg-success/90",
+        info: "bg-info text-info-foreground shadow-sm hover:bg-info/90",
+        warning:
+          "bg-warning text-warning-foreground shadow-sm hover:bg-warning/90",
+        purple: "bg-purple text-purple-foreground shadow-sm hover:bg-purple/90",
+        orange: "bg-orange text-orange-foreground shadow-sm hover:bg-orange/90",
       },
       size: {
         default: "h-9 px-4 py-2",

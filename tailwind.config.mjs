@@ -10,7 +10,27 @@ export default {
   	extend: {
   		colors: {
   			background: 'var(--background)',
-  			foreground: 'var(--foreground)'
+  			foreground: 'var(--foreground)',
+			// success: {
+			// 	DEFAULT: 'var(--success)',
+			// 	'foreground': 'var(--success-foreground)'
+			// },
+			// info: {
+			// 	DEFAULT: 'var(--info)',
+			// 	'foreground': 'var(--info-foreground)'
+			// },
+			// warning: {
+			// 	DEFAULT: 'var(--warning)',
+			// 	'foreground': 'var(--warning-foreground)'
+			// },
+			// purple: {
+			// 	DEFAULT: 'var(--purple)',
+			// 	'foreground': 'var(--purple-foreground)'
+			// },
+			// orange: {
+			// 	DEFAULT: 'var(--orange)',
+			// 	'foreground': 'var(--orange-foreground)'
+			// }
   		},
   		borderRadius: {
   			lg: 'var(--radius)',
