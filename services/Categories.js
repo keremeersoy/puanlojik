@@ -1,4 +1,4 @@
-import { doc, getDoc, getDocs, collection, query, orderBy, limit, setDoc, where } from 'firebase/firestore';
+import { doc, getDoc, getDocs, collection, query, orderBy, limit, where, setDoc, updateDoc } from 'firebase/firestore';
 import { format } from 'date-fns';
 
 const { db } = require('@/lib/firebase');
@@ -43,6 +43,47 @@ const Categories = {
       return false;
     }
   },
+
+  getSuggestedCategories: async () => {
+    try {
+      const categoriesQuery = query(
+        collection(db, 'categories'),
+        where('isEnabled', '==', false),
+        orderBy('createdAt', 'desc')
+      );
+      const querySnapshot = await getDocs(categoriesQuery);
+
+      const fetchedCategories = await Promise.all(
+        querySnapshot.docs.map(async (categoryDoc) => {
+          const categoryData = categoryDoc.data();
+
+          return {
+            id: categoryDoc.id,
+            createdAtFormatted: format(categoryData.createdAt.toDate(), 'dd/MM/yyyy HH:mm'),
+            ...categoryData,
+          };
+        })
+      );
+
+      return fetchedCategories;
+    } catch (error) {
+      console.error('Error in getSuggestedCategories:', error);
+      return false;
+    }
+  },
+
+  approveCategory: async (categoryId) => {
+    try {
+      const categoryRef = doc(db, 'categories', categoryId);
+      await updateDoc(categoryRef, {
+        isEnabled: true
+      });
+      return true;
+    } catch (error) {
+      console.error('Error in approveCategory:', error);
+      return false;
+    }
+  }
 };
 
 export { Categories };

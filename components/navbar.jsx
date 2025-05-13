@@ -64,6 +64,11 @@ const Navbar = () => {
               <Link href="/suggest-category">
                 <DropdownMenuItem className="cursor-pointer">Kategori Öner</DropdownMenuItem>
               </Link>
+              {user?.email === 'keremazimetersoy@gmail.com' && (
+                <Link href="/admin">
+                  <DropdownMenuItem className="cursor-pointer">Admin Paneli</DropdownMenuItem>
+                </Link>
+              )}
               <DropdownMenuItem className="cursor-pointer">Ayarlar</DropdownMenuItem>
 
               <DropdownMenuSeparator />
