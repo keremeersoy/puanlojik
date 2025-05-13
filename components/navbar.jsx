@@ -61,6 +61,9 @@ const Navbar = () => {
               <Link href="/app/comments/my-comments">
                 <DropdownMenuItem className="cursor-pointer">Yorumlarım</DropdownMenuItem>
               </Link>
+              <Link href="/suggest-category">
+                <DropdownMenuItem className="cursor-pointer">Kategori Öner</DropdownMenuItem>
+              </Link>
               <DropdownMenuItem className="cursor-pointer">Ayarlar</DropdownMenuItem>
 
               <DropdownMenuSeparator />

@@ -3,16 +3,18 @@ import MaxWidthWrapper from '@/components/max-width-wrapper';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Products } from '@/services/Products';
-import { RotateCw, Search } from 'lucide-react';
+import { RotateCw, Search, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
+import useUser from '@/hooks/use-user';
 
 const CategoryIdPage = () => {
   const { id } = useParams();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const { user } = useUser();
 
   useEffect(() => {
     Products.getProductsByCategoryId(id)
@@ -62,7 +64,26 @@ const CategoryIdPage = () => {
             </div>
           ))
         ) : (
-          <p>Ürün bulunamadı</p>
+          <div className="flex flex-col items-center space-y-4">
+            <p>Ürün bulunamadı</p>
+            {user && (
+              <Button asChild variant="outline" className="w-full">
+                <Link href={`/suggest-product?categoryId=${id}`} className="flex items-center gap-2">
+                  <Plus className="w-4 h-4" />
+                  Yeni Ürün Öner
+                </Link>
+              </Button>
+            )}
+          </div>
+        )}
+
+        {filteredProducts.length > 0 && user && (
+          <Button asChild variant="outline" className="mt-8 w-full">
+            <Link href={`/suggest-product?categoryId=${id}`} className="flex items-center gap-2">
+              <Plus className="w-4 h-4" />
+              Yeni Ürün Öner
+            </Link>
+          </Button>
         )}
       </div>
     </MaxWidthWrapper>

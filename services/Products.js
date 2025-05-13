@@ -1,4 +1,4 @@
-import { doc, getDoc, getDocs, collection, query, orderBy, limit, where } from 'firebase/firestore';
+import { doc, getDoc, getDocs, collection, query, orderBy, limit, where, setDoc } from 'firebase/firestore';
 import { format } from 'date-fns';
 
 const { db } = require('@/lib/firebase');
@@ -6,21 +6,21 @@ const { db } = require('@/lib/firebase');
 const Products = {
   getAllProducts: async () => {
     try {
-      const categoriesQuery = query(collection(db, 'categories'), orderBy('name'));
-      const querySnapshot = await getDocs(categoriesQuery);
+      const productsQuery = query(collection(db, 'products'), where('isEnabled', '==', true), orderBy('name'));
+      const querySnapshot = await getDocs(productsQuery);
 
-      const fetchedCategories = await Promise.all(
-        querySnapshot.docs.map(async (categoryDoc) => {
-          const categoryData = categoryDoc.data();
+      const fetchedProducts = await Promise.all(
+        querySnapshot.docs.map(async (productDoc) => {
+          const productData = productDoc.data();
 
           return {
-            id: categoryDoc.id,
-            ...categoryData,
+            id: productDoc.id,
+            ...productData,
           };
         })
       );
 
-      return fetchedCategories;
+      return fetchedProducts;
     } catch (error) {
       console.error('Error in getAllProducts:', error);
       return false;
@@ -28,7 +28,12 @@ const Products = {
   },
   getProductsByCategoryId: async (categoryId) => {
     try {
-      const productsQuery = query(collection(db, 'products'), orderBy('name'), where('categoryId', '==', categoryId));
+      const productsQuery = query(
+        collection(db, 'products'), 
+        where('categoryId', '==', categoryId),
+        where('isEnabled', '==', true),
+        orderBy('name')
+      );
       const querySnapshot = await getDocs(productsQuery);
 
       const fetchedProducts = await Promise.all(
@@ -65,6 +70,24 @@ const Products = {
       return null;
     } catch (error) {
       console.error('Error in getProductById:', error);
+      return false;
+    }
+  },
+  suggestNewProduct: async (productData, user) => {
+    try {
+      const newProductRef = doc(collection(db, 'products'));
+      await setDoc(newProductRef, {
+        ...productData,
+        isEnabled: false,
+        createdAt: new Date(),
+        userId: user.uid,
+        commentCount: 0,
+        totalScore: 0
+      });
+
+      return true;
+    } catch (error) {
+      console.error('Error in suggestNewProduct:', error);
       return false;
     }
   },
