@@ -14,13 +14,15 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { RotateCw } from 'lucide-react';
+import { Suspense } from 'react';
 
 const suggestProductSchema = z.object({
   name: z.string().min(3, 'Ürün adı en az 3 karakter olmalıdır.').max(100, 'Ürün adı en fazla 100 karakter olabilir.'),
   description: z.string().min(10, 'Açıklama en az 10 karakter olmalıdır.').max(500, 'Açıklama en fazla 500 karakter olabilir.'),
 });
 
-const SuggestProductPage = () => {
+// Form bileşenini ayrı bir component olarak çıkarıyoruz
+const SuggestProductForm = () => {
   const { user, loading } = useUser();
   const { toast } = useToast();
   const router = useRouter();
@@ -78,14 +80,57 @@ const SuggestProductPage = () => {
 
   if (loading) {
     return (
-      <MaxWidthWrapper>
-        <div className="flex items-center justify-center h-screen">
-          <RotateCw className="text-orange-500 animate-spin" />
-        </div>
-      </MaxWidthWrapper>
+      <div className="flex items-center justify-center h-[200px]">
+        <RotateCw className="text-orange-500 animate-spin" />
+      </div>
     );
   }
 
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Ürün Adı</FormLabel>
+              <FormControl>
+                <Input {...field} placeholder="Örn: iPhone 15 Pro" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Açıklama</FormLabel>
+              <FormControl>
+                <Textarea
+                  {...field}
+                  placeholder="Bu ürünü neden önerdiğinizi ve özelliklerini açıklayın..."
+                  className="min-h-[100px]"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <Button type="submit" className="w-full" variant="orange">
+          Ürün Öner
+        </Button>
+      </form>
+    </Form>
+  );
+};
+
+// Ana sayfa bileşeni
+const SuggestProductPage = () => {
   return (
     <MaxWidthWrapper>
       <Card className="w-full max-w-2xl mx-auto">
@@ -97,45 +142,13 @@ const SuggestProductPage = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Ürün Adı</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Örn: iPhone 15 Pro" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Açıklama</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        {...field}
-                        placeholder="Bu ürünü neden önerdiğinizi ve özelliklerini açıklayın..."
-                        className="min-h-[100px]"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <Button type="submit" className="w-full" variant="orange">
-                Ürün Öner
-              </Button>
-            </form>
-          </Form>
+          <Suspense fallback={
+            <div className="flex items-center justify-center h-[200px]">
+              <RotateCw className="text-orange-500 animate-spin" />
+            </div>
+          }>
+            <SuggestProductForm />
+          </Suspense>
         </CardContent>
       </Card>
     </MaxWidthWrapper>
