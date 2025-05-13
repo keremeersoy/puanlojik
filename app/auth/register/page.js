@@ -125,7 +125,6 @@ const RegisterPage = () => {
                   />
                 </div>
 
-                {/* Email Field */}
                 <FormField
                   control={form.control}
                   name="email"
@@ -140,7 +139,6 @@ const RegisterPage = () => {
                   )}
                 />
 
-                {/* Password Fields */}
                 <FormField
                   control={form.control}
                   name="password"
