@@ -1,4 +1,4 @@
-import { doc, getDoc, getDocs, collection, query, orderBy, limit, where, setDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, getDocs, collection, query, orderBy, limit, where, setDoc, updateDoc, getCountFromServer } from 'firebase/firestore';
 import { format } from 'date-fns';
 
 const { db } = require('@/lib/firebase');
@@ -7,14 +7,29 @@ const Categories = {
   getAllCategories: async () => {
     try {
       const categoriesQuery = query(collection(db, 'categories'), where('isEnabled', '==', true), orderBy('name'));
-      const querySnapshot = await getDocs(categoriesQuery);
+      const categoriesSnapshot = await getDocs(categoriesQuery);
 
       const fetchedCategories = await Promise.all(
-        querySnapshot.docs.map(async (categoryDoc) => {
+        categoriesSnapshot.docs.map(async (categoryDoc) => {
           const categoryData = categoryDoc.data();
+          const categoryId = categoryDoc.id;
+
+          let productCount = 0;
+          try {
+            const productsQuery = query(
+              collection(db, 'products'), 
+              where('categoryId', '==', categoryId),
+              where('isEnabled', '==', true)
+            );
+            const snapshot = await getCountFromServer(productsQuery);
+            productCount = snapshot.data().count;
+          } catch (countError) {
+            console.error(`Error fetching product count for category ${categoryId}:`, countError);
+          }
 
           return {
-            id: categoryDoc.id,
+            id: categoryId,
+            productCount: productCount, 
             ...categoryData,
           };
         })
@@ -23,7 +38,7 @@ const Categories = {
       return fetchedCategories;
     } catch (error) {
       console.error('Error in getAllCategories:', error);
-      return false;
+      return [];
     }
   },
   
@@ -68,7 +83,7 @@ const Categories = {
       return fetchedCategories;
     } catch (error) {
       console.error('Error in getSuggestedCategories:', error);
-      return false;
+      return [];
     }
   },
 
